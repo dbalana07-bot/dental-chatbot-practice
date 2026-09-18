@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bright Smile Dental chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="widget-frame.css" />
+</head>
+<body class="state-collapsed">
+
+  <button id="chat-launcher" aria-label="Open chat">💬</button>
+
+  <div id="chat-panel">
+    <div class="chat-header">
+      <div>
+        <div class="name">Sam · Bright Smile Dental</div>
+        <div class="status">Usually replies instantly</div>
+      </div>
+      <button id="chat-close" aria-label="Close chat">×</button>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input-row">
+      <input id="chat-input" type="text" placeholder="Ask about pricing, hours, or book a visit…" />
+      <button id="chat-send">Send</button>
+    </div>
+  </div>
+
+  <script src="widget-frame.js"></script>
+</body>
+</html>

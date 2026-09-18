@@ -1,0 +1,7 @@
+node_modules/
+.env
+data.json
+
+# Google service account key files, if you download one into this folder
+service-account*.json
+credentials.json
