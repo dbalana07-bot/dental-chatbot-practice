@@ -1,7 +1,3 @@
-// widget-frame.js — runs inside the embed iframe, isolated from whatever
-// site loaded it. Talks to /api/chat on this same origin (the chatbot's own
-// server), regardless of what domain the parent page is on.
-
 (function () {
   const launcher = document.getElementById("chat-launcher");
   const closeBtn = document.getElementById("chat-close");
@@ -16,7 +12,10 @@
   function setOpen(open) {
     document.body.classList.toggle("state-collapsed", !open);
     document.body.classList.toggle("state-expanded", open);
-    // Tell embed.js on the host page to resize the iframe to match.
+    
+    // Reset internal document scroll position
+    window.scrollTo(0, 0);
+
     window.parent.postMessage({ type: "brightSmileChatResize", open }, "*");
     if (open) {
       if (messagesEl.children.length === 0) {
@@ -25,7 +24,8 @@
           "Hi, I'm Sam 👋 I can answer questions about Bright Smile Dental or help you book an appointment. What can I help with?"
         );
       }
-      input.focus();
+      // Prevent browser auto-scrolling on focus
+      input.focus({ preventScroll: true });
     }
   }
 
@@ -62,12 +62,10 @@
 
   function addTypingIndicator(label) {
     const div = document.createElement("div");
-    div.className = "msg bot";
+    div.className = "msg bot typing-indicator-msg";
     div.id = "typing-indicator";
-    div.innerHTML = `
-      <div class="typing-label">${label}</div>
-      <div class="typing-dots"><span></span><span></span><span></span></div>
-    `;
+    // Kept on a single line to prevent pre-wrap whitespace rendering
+    div.innerHTML = `<div class="typing-label">${label}</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
     messagesEl.appendChild(div);
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }

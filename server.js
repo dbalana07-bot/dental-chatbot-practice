@@ -1,34 +1,22 @@
-// server.js
-// Backend for the Bright Smile Dental chatbot demo — now running on Google's
-// Gemini API instead of Claude, since Gemini's free tier needs no credit card.
-// Get a key at https://aistudio.google.com/app/apikey
-
 import express from "express";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
-import dotenv from "dotenv";
+import 'dotenv/config'; // Loads .env variables BEFORE any other modules import
 import fs from "fs";
 import { randomUUID } from "crypto";
 import { appendRow, sheetsEnabled } from "./googleSheets.js";
-import { notifyBooking, notifyLead, emailEnabled } from "./email.js";
-
-dotenv.config();
+import { notifyBooking, notifyLead, notifyCancellation,emailEnabled, } from "./email.js";
 
 const app = express();
 
 // ---- CORS ----
-// In dev, leaving ALLOWED_ORIGINS unset allows any origin (so the demo just
-// works). For a real deployment, set ALLOWED_ORIGINS to a comma-separated
-// list of the exact site(s) that embed the widget, e.g.
-// "https://brightsmiledental.com,https://www.brightsmiledental.com" — this
-// stops other sites from calling your API and burning your Gemini quota.
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
   : null;
 
 app.use(
   cors({
-    origin: ALLOWED_ORIGINS || true, // true = reflect request origin (dev default)
+    origin: ALLOWED_ORIGINS || true,
   })
 );
 if (!ALLOWED_ORIGINS) {
@@ -42,8 +30,6 @@ app.use(express.json({ limit: "100kb" }));
 app.use(express.static("public"));
 
 // ---- Rate limiting ----
-// Protects the Gemini quota/bill from being drained by a script hammering
-// this endpoint directly (bypassing the widget entirely). Tune to taste.
 const chatLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: Number(process.env.CHAT_RATE_LIMIT_PER_MIN) || 20,
@@ -53,10 +39,6 @@ const chatLimiter = rateLimit({
 });
 
 // ---- Admin auth ----
-// Guards /api/leads and /api/bookings, which contain real patient contact
-// info. Set ADMIN_KEY in .env, then pass it as the "x-admin-key" header
-// when checking these endpoints (e.g. via curl, Postman, or a small
-// internal dashboard) — never expose it in client-side/public code.
 const ADMIN_KEY = process.env.ADMIN_KEY;
 if (!ADMIN_KEY) {
   console.warn(
@@ -75,9 +57,6 @@ function requireAdmin(req, res, next) {
 }
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-// gemini-3.1-flash-lite is the current cheap/fast stable model with a free tier.
-// If it ever gets retired, swap in whatever Google's docs list as the current
-// Flash-Lite/Flash model — the rest of this file doesn't need to change.
 const MODEL = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
@@ -103,9 +82,6 @@ console.log(
 );
 
 // ---- "Database" ----
-// A JSON file on disk, not a real database — but it means leads and bookings
-// survive a server restart, which a purely in-memory array wouldn't.
-// Swap this for a real DB (Postgres, Sheets, Airtable...) when you go live.
 const DATA_FILE = "./data.json";
 
 function loadData() {
@@ -114,7 +90,7 @@ function loadData() {
     const parsed = JSON.parse(raw);
     return { leads: parsed.leads || [], bookings: parsed.bookings || [] };
   } catch {
-    return { leads: [], bookings: [] }; // no file yet, or it's corrupt — start fresh
+    return { leads: [], bookings: [] };
   }
 }
 
@@ -130,7 +106,6 @@ const { leads, bookings } = loadData();
 console.log(`📂 Loaded ${leads.length} lead(s) and ${bookings.length} booking(s) from data.json`);
 
 // ---- Office hours, used by check_availability ----
-// 0 = Sunday ... 6 = Saturday. Closed days are omitted.
 const OFFICE_HOURS = {
   1: { open: "08:00", close: "18:00" },
   2: { open: "08:00", close: "18:00" },
@@ -140,18 +115,9 @@ const OFFICE_HOURS = {
   6: { open: "09:00", close: "14:00" },
 };
 const WEEKDAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-// Default slot length used for overlap checking. A real system would vary
-// this by service (cleaning vs. root canal), but a fixed minimum stops the
-// most obvious bug: two bookings a few minutes apart both going through as
-// "available" because their time strings didn't match exactly.
 const APPOINTMENT_LENGTH_MIN = 30;
-
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-// Turns "2:30pm", "2:30 PM", "14:30" etc. into minutes since midnight, or
-// null if it can't be parsed. Used both to validate against office hours
-// and to detect overlapping bookings regardless of how the time was typed.
 function parseTimeToMinutes(timeStr) {
   if (typeof timeStr !== "string") return null;
   const s = timeStr.trim().toLowerCase();
@@ -188,11 +154,9 @@ function minutesToClock(mins) {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
-// ---- The business this bot represents. Edit this for your real client. ----
-// A function (not a plain string) so it can stamp in today's date — Gemini
-// needs that to turn "this Friday" into an actual calendar date.
+// ---- Business Profile Prompt ----
 function buildBusinessProfile() {
-  const today = new Date().toISOString().split("T")[0]; // e.g. 2026-09-11
+  const today = new Date().toISOString().split("T")[0];
   return `
 You are Sam, the virtual front-desk assistant for Bright Smile Dental, a family
 dental practice. You are warm, concise, and efficient — like a great receptionist,
@@ -218,31 +182,20 @@ PRACTICE INFO:
 
 WHAT YOU CAN DO:
 1. Answer questions about hours, services, pricing, and insurance using the info above.
-2. If someone seems interested but isn't ready to book (e.g. "how much is whitening",
-   "do you take my insurance"), you can offer to have the office follow up — if they
-   agree, collect their name and phone number and call capture_lead.
-3. If someone wants to schedule, first call check_availability with the date so you
-   know the office's hours that day and which times are already taken. Use that to
-   suggest a real open time rather than guessing. Once you have a name, date, time,
-   and service, call book_appointment. If book_appointment comes back with a conflict,
-   apologize, tell the patient that time just got taken, and ask for a different time.
-   Always confirm the final details back to them in plain language after it succeeds.
-   After confirming, ask if they'd like an email confirmation — if they give you one,
-   pass it along to book_appointment. It's optional; never make booking depend on it.
-4. If you don't know something (e.g. a very specific clinical question), say so
-   honestly and offer to have Dr. Ruiz's office call them back — don't make things up.
-5. Once book_appointment succeeds, that appointment is done — never call
-   book_appointment again for the same request, even if the patient shares
-   more info afterward (like an email address). Don't ask patients for an
-   email address at all; if the practice wants confirmation emails, that's
-   handled automatically by the system, not something you request in chat.
+2. If someone seems interested but isn't ready to book, offer to have the office follow up — collect their name and phone number (and optional email) and call capture_lead.
+3. If someone wants to schedule, first call check_availability with the date to check open times. Suggest an open time slot.
+4. Before calling book_appointment, you MUST ask for and collect the patient's name, phone number, AND email address. Do not book until you have all three.
+5. Once you have name, date, time, and service, call book_appointment with all collected details. If book_appointment returns a conflict, apologize and ask for a different time. Once it succeeds, confirm the details back to the patient in plain language and let them know a confirmation email with a calendar invite has been sent.
+6. Do not call book_appointment again for the same request once it has succeeded.
+7. If a patient wants to cancel an existing appointment, ask for their name and email address (or phone number), then call cancel_appointment.
+8. If a patient wants to reschedule, first call check_availability for the new date to suggest open times, then call reschedule_appointment with their name, email, new date, and new time.
+9. If you don't know something, say so honestly and offer to have Dr. Ruiz's office call back.
 
-Never invent information that isn't in this profile. Stay in character as the
-practice's assistant at all times.
+Never invent information that isn't in this profile. Stay in character as the practice's assistant.
 `;
 }
 
-// Gemini's function-declaration format: uppercase JSON-Schema-ish types.
+// ---- Gemini Tools Definition ----
 const tools = [
   {
     functionDeclarations: [
@@ -275,27 +228,52 @@ const tools = [
       },
       {
         name: "book_appointment",
-        description:
-          "Book a confirmed appointment slot for a patient. Use once you have a name, date, time, and service.",
+        description: "Book a confirmed appointment slot for a patient.",
         parameters: {
           type: "OBJECT",
           properties: {
             name: { type: "STRING", description: "Patient's name" },
-            date: { type: "STRING", description: "Requested date, e.g. '2026-09-15' or 'this Friday'" },
+            date: { type: "STRING", description: "Requested date, e.g. YYYY-MM-DD" },
             time: { type: "STRING", description: "Requested time, e.g. '2:30pm'" },
             service: { type: "STRING", description: "What the appointment is for" },
-            email: {
-              type: "STRING",
-              description: "Patient's email, if they'd like a confirmation sent (optional — never required to book)",
-            },
+            phone: { type: "STRING", description: "Patient's phone number" },
+            email: { type: "STRING", description: "Patient's email address for confirmation" },
           },
-          required: ["name", "date", "time", "service"],
+          required: ["name", "date", "time", "service", "phone", "email"],
         },
       },
+      {
+        name: "cancel_appointment",
+        description: "Cancel an existing appointment for a patient using their name and email or phone.",
+        parameters: {
+          type: "OBJECT",
+          properties: {
+            name: { type: "STRING", description: "Patient's name" },
+            email: { type: "STRING", description: "Patient's email address" },
+            phone: { type: "STRING", description: "Patient's phone number" }
+          },
+          required: ["name"]
+        }
+      },
+      {
+        name: "reschedule_appointment",
+        description: "Change an existing appointment to a new date and time.",
+        parameters: {
+          type: "OBJECT",
+          properties: {
+            name: { type: "STRING", description: "Patient's name" },
+            email: { type: "STRING", description: "Patient's email address" },
+            new_date: { type: "STRING", description: "New requested date YYYY-MM-DD" },
+            new_time: { type: "STRING", description: "New requested time e.g. 2:30pm" }
+          },
+          required: ["name", "email", "new_date", "new_time"]
+        }
+      }
     ],
   },
 ];
 
+// ---- Tool Execution Handler ----
 async function executeTool(name, args) {
   if (name === "check_availability") {
     if (!DATE_RE.test(args.date || "")) {
@@ -335,16 +313,12 @@ async function executeTool(name, args) {
     leads.push(lead);
     saveData();
     console.log("📇 New lead captured:", lead);
-    // Sheet columns: Date, Name, Phone, Reason
     await appendRow("Leads", [lead.createdAt, lead.name, lead.phone, lead.reason]);
-    notifyLead(lead).catch((err) => console.error("⚠️  notifyLead failed:", err)); // fire-and-forget, never blocks the reply
+    notifyLead(lead).catch((err) => console.error("⚠️  notifyLead failed:", err));
     return { status: "success", message: "Lead saved. Front desk will follow up." };
   }
 
   if (name === "book_appointment") {
-    // Re-validate everything server-side rather than trusting the model to
-    // only ever call this tool with sane values — this is the actual write
-    // path into the data store.
     if (!DATE_RE.test(args.date || "")) {
       return { status: "error", message: "That date wasn't in YYYY-MM-DD format. Convert it first, then retry." };
     }
@@ -375,8 +349,6 @@ async function executeTool(name, args) {
       };
     }
 
-    // Overlap check, not exact-string match — catches "2:30pm" vs "14:30"
-    // and slots that are merely close together rather than identical.
     const conflict = bookings.find((b) => {
       if (b.date !== args.date) return false;
       const existingMin = parseTimeToMinutes(b.time);
@@ -390,8 +362,6 @@ async function executeTool(name, args) {
       };
     }
 
-    // Store a normalized clock time alongside the original text so future
-    // conflict checks stay reliable regardless of how a time was phrased.
     const booking = {
       id: randomUUID(),
       ...args,
@@ -401,11 +371,7 @@ async function executeTool(name, args) {
     bookings.push(booking);
     saveData();
     console.log("📅 New booking:", booking);
-    // Sheet columns: Booked at, Patient name, Appointment date, Time, Service
     await appendRow("Bookings", [booking.createdAt, booking.name, booking.date, booking.time, booking.service]);
-    // Fire-and-forget: sending email (unlike the local/Sheets save) can take a
-    // second or two, and a slow or failed send should never delay or break
-    // a booking that's already confirmed and saved.
     notifyBooking(booking).catch((err) => console.error("⚠️  notifyBooking failed:", err));
     return {
       status: "success",
@@ -413,24 +379,64 @@ async function executeTool(name, args) {
     };
   }
 
+  if (name === "cancel_appointment") {
+    const index = bookings.findIndex(
+      (b) =>
+        b.name.toLowerCase().includes((args.name || "").toLowerCase()) ||
+        (args.email && b.email === args.email) ||
+        (args.phone && b.phone === args.phone)
+    );
+
+    if (index === -1) {
+      return { status: "error", message: "No matching active booking was found." };
+    }
+
+    const [cancelledBooking] = bookings.splice(index, 1);
+    saveData();
+
+    notifyCancellation(cancelledBooking).catch((err) => console.error("⚠️ notifyCancellation failed:", err));
+
+    return {
+      status: "success",
+      message: `Appointment for ${cancelledBooking.name} on ${cancelledBooking.date} at ${cancelledBooking.time} was successfully cancelled.`
+    };
+  }
+
+  if (name === "reschedule_appointment") {
+    const booking = bookings.find(
+      (b) =>
+        b.name.toLowerCase().includes((args.name || "").toLowerCase()) ||
+        (args.email && b.email === args.email)
+    );
+
+    if (!booking) {
+      return { status: "error", message: "No existing booking found under that name/email." };
+    }
+
+    const oldDate = booking.date;
+    const oldTime = booking.time;
+    booking.date = args.new_date;
+    booking.time = args.new_time;
+
+    saveData();
+
+    notifyBooking(booking).catch((err) => console.error("⚠️ notifyBooking failed:", err));
+
+    return {
+      status: "success",
+      message: `Appointment rescheduled from ${oldDate} @ ${oldTime} to ${booking.date} @ ${booking.time}. Updated confirmation email sent.`
+    };
+  }
+
   return { status: "error", message: "Unknown tool" };
 }
 
-// ---- Conversation sessions ----
-// Keyed by a server-issued sessionId. The client only ever sends its own new
-// message text plus the sessionId it was given — never the full history.
-// That matters: if the client could send back arbitrary "model" turns or
-// forged functionResponse blocks (as the old version allowed), it could
-// fake a previous successful tool call or splice in text pretending to be
-// Sam's own prior reply. Keeping history server-side closes that off.
-// In-memory only — sessions reset if the server restarts, which is fine
-// for a demo; swap for Redis/a DB if you need chats to survive a redeploy.
+// ---- Session Storage ----
 const sessions = new Map();
-const MAX_TURNS_PER_SESSION = 40; // cap history length so cost/context doesn't grow unbounded
+const MAX_TURNS_PER_SESSION = 40;
 const MAX_MESSAGE_LENGTH = 2000;
 
-// ---- Main chat endpoint ----
-// Client sends { sessionId?: string, message: string }
+// ---- Main Chat Endpoint ----
 app.post("/api/chat", chatLimiter, async (req, res) => {
   try {
     const { sessionId: incomingSessionId, message } = req.body;
@@ -450,7 +456,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
     let finalTextResponse = "";
     let toolEvents = [];
 
-    // Agentic loop: keep going while Gemini wants to call a function
+    // Agentic loop: process Gemini function calls
     for (let i = 0; i < 5; i++) {
       const response = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
         method: "POST",
@@ -464,7 +470,7 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
 
       if (!response.ok) {
         const errText = await response.text();
-        console.error("Gemini API error:", errText); // full detail stays server-side only
+        console.error("Gemini API error:", errText);
         return res.status(502).json({ error: "Sorry, I'm having trouble reaching the assistant right now. Please try again shortly." });
       }
 
@@ -472,7 +478,6 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       const candidate = data.candidates?.[0];
       const parts = candidate?.content?.parts || [];
 
-      // Echo the model's own turn back into history verbatim (required by Gemini)
       contents.push({ role: "model", parts });
 
       const functionCalls = parts.filter((p) => p.functionCall).map((p) => p.functionCall);
@@ -480,10 +485,9 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       finalTextResponse = textParts.join("\n");
 
       if (functionCalls.length === 0) {
-        break; // Gemini gave a final answer, we're done
+        break; // Conversation completed
       }
 
-      // Execute each requested function and feed results back as a "user" turn
       const responseParts = await Promise.all(
         functionCalls.map(async (call) => {
           const result = await executeTool(call.name, call.args);
@@ -500,8 +504,6 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       contents.push({ role: "user", parts: responseParts });
     }
 
-    // Cap stored history so a long-running session doesn't grow the context
-    // (and the per-request cost) without bound. Trims oldest turns first.
     if (contents.length > MAX_TURNS_PER_SESSION) {
       contents = contents.slice(contents.length - MAX_TURNS_PER_SESSION);
     }
@@ -513,14 +515,12 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       toolEvents,
     });
   } catch (err) {
-    console.error(err); // full detail stays server-side only
+    console.error(err);
     res.status(500).json({ error: "Something went wrong on our end. Please try again." });
   }
 });
 
-// ---- Admin/inspection endpoints ----
-// Contain real patient names/phone numbers — protected by ADMIN_KEY (see
-// requireAdmin above). Not linked from anywhere in the public site.
+// ---- Admin Endpoints ----
 app.get("/api/leads", requireAdmin, (req, res) => res.json(leads));
 app.get("/api/bookings", requireAdmin, (req, res) => res.json(bookings));
 
