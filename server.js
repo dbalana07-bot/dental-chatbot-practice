@@ -525,4 +525,4 @@ app.get("/api/leads", requireAdmin, (req, res) => res.json(leads));
 app.get("/api/bookings", requireAdmin, (req, res) => res.json(bookings));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
