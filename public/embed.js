@@ -9,10 +9,12 @@
   })();
 
   var COLLAPSED = { width: "76px", height: "76px" };
-  var MOBILE_BREAKPOINT = 640; // Updated to cover modern mobile devices
+  var MOBILE_BREAKPOINT = 640;
 
+  // Pass parent origin safely to the iframe via query parameters
+  var hostOrigin = encodeURIComponent(window.location.origin);
   var iframe = document.createElement("iframe");
-  iframe.src = CHAT_ORIGIN + "/widget-frame.html";
+  iframe.src = CHAT_ORIGIN + "/widget-frame.html?hostOrigin=" + hostOrigin;
   iframe.title = "Bright Smile Dental chat";
   iframe.setAttribute("allowtransparency", "true");
   iframe.style.position = "fixed";
@@ -48,7 +50,6 @@
       iframe.style.right = "0";
       iframe.style.borderRadius = "0";
     } else {
-      // Fit dynamically inside smaller desktop viewports without overflowing
       var targetWidth = Math.min(384, window.innerWidth - 32);
       var targetHeight = Math.min(600, window.innerHeight - 32);
 

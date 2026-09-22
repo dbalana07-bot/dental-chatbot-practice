@@ -1,7 +1,7 @@
 {
   "name": "dental-chatbot-demo",
   "version": "1.0.0",
-  "description": "Claude-powered chatbot demo for a dental practice — answers questions, captures leads, books appointments.",
+  "description": "Gemini-powered chatbot demo for a dental practice — answers questions, captures leads, books appointments.",
   "type": "module",
   "main": "server.js",
   "scripts": {
@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.6.1",
     "express": "^4.19.2",
     "express-rate-limit": "^7.4.0",
     "googleapis": "^181.0.0",

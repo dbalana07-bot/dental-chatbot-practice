@@ -78,7 +78,7 @@
 
 /* ---- Dashboard ---- */
 .dashboard {
-  max-width: 920px;
+  max-width: 980px;
   margin: 0 auto;
   padding: 28px 24px 60px;
 }
@@ -187,6 +187,77 @@ th {
 }
 tr:last-child td { border-bottom: none; }
 td.dim { color: var(--ink-soft); }
+
+/* Badges & Actions */
+.status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+}
+.status-badge.confirmed, .status-badge.followed-up { background: #E8F5E9; color: #2E7D32; }
+.status-badge.rescheduled { background: #FFF8E1; color: #F57F17; }
+.status-badge.cancelled { background: #FFEBEE; color: #C62828; }
+.status-badge.new { background: #E3F2FD; color: #1565C0; }
+
+.action-select {
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 12px;
+  background: var(--paper);
+}
+
+.btn-sm {
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  cursor: pointer;
+  margin-right: 4px;
+}
+.btn-sm:hover { background: var(--line); }
+
+.table-link { color: var(--ink); font-weight: 700; text-decoration: none; }
+.table-link:hover { text-decoration: underline; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 61, 58, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-card {
+  background: var(--card);
+  border-radius: 14px;
+  width: 90%;
+  max-width: 520px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h3 { font-size: 16px; margin: 0; }
+.modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--ink-soft); }
+.modal-body { padding: 20px; overflow-y: auto; font-size: 13.5px; display: flex; flex-direction: column; gap: 8px; }
+
+.transcript-msg { padding: 8px 12px; border-radius: 8px; max-width: 85%; }
+.transcript-msg.user { background: var(--ink); color: var(--paper); align-self: flex-end; }
+.transcript-msg.bot { background: var(--paper); border: 1px solid var(--line); align-self: flex-start; }
 
 .empty-note {
   padding: 28px;

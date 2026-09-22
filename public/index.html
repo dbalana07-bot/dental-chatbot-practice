@@ -1,82 +1,621 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Bright Smile Dental — Springfield</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bright Smile Dental — Gentle & Modern Dentistry in Springfield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <header class="site-header">
+  <!-- Top Emergency & Info Banner -->
+  <div class="top-bar">
+    <div class="wrap top-bar-content">
+      <span> <strong>Dental Emergency?</strong> Same-day slots reserved daily.</span>
+      <div class="top-bar-links">
+        <a href="tel:5551234567">📞 (555) 123-4567</a>
+        <span class="status-indicator open" id="office-status">🟢 Open Today 8:00 AM – 6:00 PM</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header / Navigation -->
+  <header class="site-header" id="site-header">
     <div class="wrap header-row">
-      <div class="brand">Bright Smile Dental</div>
-      <nav class="nav">
-        <span>Services</span>
-        <span>Meet Dr. Ruiz</span>
-        <span>Hours &amp; Location</span>
+      <a href="#" class="brand">
+        <span class="brand-icon">✨</span>
+        <span class="brand-name">Bright Smile <small>Dental</small></span>
+      </a>
+      
+      <nav class="nav" id="main-nav">
+        <a href="#services">Services</a>
+        <a href="#insurance">Insurance</a>
+        <a href="#about">Meet Dr. Ruiz</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#faq">FAQ</a>
+        <a href="#location">Hours & Location</a>
       </nav>
+
+      <div class="header-actions">
+        <button class="btn btn-primary trigger-chat" data-prompt="I'd like to book an appointment">
+          Book Appointment
+        </button>
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </header>
 
   <main>
+    <!-- Hero Section -->
     <section class="hero">
       <div class="wrap hero-grid">
         <div class="hero-copy">
-          <h1>A dentist's office<br>that doesn't feel<br>like one.</h1>
+          <div class="badge-pill">
+            <span class="star-rating">★★★★★</span>
+            <span>Rated #1 Dental Office in Springfield</span>
+          </div>
+          <h1>A dentist's office that doesn't feel like one.</h1>
           <p class="hero-sub">
-            Dr. Elena Ruiz and the Bright Smile team have kept Springfield
-            smiling for twelve years — gentle cleanings, honest advice,
-            and appointments that actually start on time.
+            Dr. Elena Ruiz and our team offer gentle cleanings, honest advice, and appointments that actually start on time. Experience stress-free dental care in a peaceful setting.
           </p>
-          <div class="hero-facts">
-            <div class="fact">
-              <span class="fact-num">142 Maple Ave</span>
-              <span class="fact-label">Springfield</span>
+
+          <div class="hero-cta-group">
+            <button class="btn btn-primary btn-lg trigger-chat" data-prompt="I want to schedule a visit">
+               Schedule Your Visit
+            </button>
+            <a href="tel:5551234567" class="btn btn-secondary btn-lg">
+               Call Front Desk
+            </a>
+          </div>
+
+          <div class="hero-trust">
+            <div class="trust-item">
+              <span class="trust-num">12+</span>
+              <span class="trust-label">Years in Springfield</span>
             </div>
-            <div class="fact">
-              <span class="fact-num">Mon–Fri 8–6</span>
-              <span class="fact-label">Sat 9–2 · closed Sun</span>
+            <div class="trust-divider"></div>
+            <div class="trust-item">
+              <span class="trust-num">10k+</span>
+              <span class="trust-label">Happy Patients</span>
             </div>
-            <div class="fact">
-              <span class="fact-num">Delta, Cigna, Aetna</span>
-              <span class="fact-label">insurance accepted</span>
+            <div class="trust-divider"></div>
+            <div class="trust-item">
+              <span class="trust-num">4.9★</span>
+              <span class="trust-label">Over 450+ Reviews</span>
             </div>
           </div>
         </div>
-        <div class="hero-panel">
-          <p class="panel-kicker">Ask us anything, any time</p>
-          <p class="panel-text">
-            The chat in the corner is staffed by Sam, our virtual front desk.
-            Try asking about pricing, insurance, or booking a cleaning.
+
+        <div class="hero-card">
+          <div class="hero-card-header">
+            <span class="ai-badge">🤖 Virtual Front Desk</span>
+            <h3>Ask Sam Anything 24/7</h3>
+          </div>
+          <p class="hero-card-desc">
+            Need pricing, insurance validation, or an appointment on short notice? Ask our virtual receptionist directly.
           </p>
-          <div class="panel-arrow" aria-hidden="true">↘</div>
+          <div class="prompt-chips">
+            <button class="chip trigger-chat" data-prompt="How much does a new patient cleaning cost?">
+               How much is a cleaning?
+            </button>
+            <button class="chip trigger-chat" data-prompt="Do you take Delta Dental or Cigna?">
+               Do you take my insurance?
+            </button>
+            <button class="chip trigger-chat" data-prompt="Do you offer teeth whitening treatments?">
+               Whitening options & pricing
+            </button>
+            <button class="chip trigger-chat" data-prompt="I have severe dental pain and need an emergency visit">
+               Emergency appointment
+            </button>
+          </div>
+          <div class="hero-card-footer">
+            <span>Instant answers • No hold music</span>
+            <span class="arrow-icon">↘</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="services">
+    <!-- Insurance Checker Section -->
+    <section class="insurance-section" id="insurance">
       <div class="wrap">
-        <h2>What we treat</h2>
-        <div class="service-grid">
-          <div class="service"><h3>Cleanings &amp; checkups</h3><p>Twice-a-year visits that catch small problems before they're big ones.</p></div>
-          <div class="service"><h3>Fillings &amp; crowns</h3><p>Tooth-colored materials that blend in, done in a single visit when possible.</p></div>
-          <div class="service"><h3>Whitening</h3><p>In-office whitening that's noticeably brighter within the hour.</p></div>
-          <div class="service"><h3>Emergency care</h3><p>Sudden pain doesn't wait for an appointment — we hold same-day slots daily.</p></div>
+        <div class="section-header center">
+          <h2>Insurance & Payment Options</h2>
+          <p>We work with most major insurance providers and offer accessible self-pay plans.</p>
+        </div>
+
+        <div class="insurance-checker">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="insurance-search" placeholder="Type your insurance provider (e.g. Delta, Cigna, MetLife)..." />
+          </div>
+
+          <div class="insurance-tags" id="insurance-tags">
+            <div class="ins-tag accepted" data-name="delta dental"><span>✅</span> Delta Dental</div>
+            <div class="ins-tag accepted" data-name="cigna"><span>✅</span> Cigna</div>
+            <div class="ins-tag accepted" data-name="aetna"><span>✅</span> Aetna</div>
+            <div class="ins-tag accepted" data-name="metlife"><span>✅</span> MetLife</div>
+            <div class="ins-tag accepted" data-name="guardian"><span>✅</span> Guardian</div>
+            <div class="ins-tag accepted" data-name="humana"><span>✅</span> Humana</div>
+            <div class="ins-tag accepted" data-name="blue cross blue shield bcbs"><span>✅</span> Blue Cross Blue Shield</div>
+            <div class="ins-tag accepted" data-name="unitedhealthcare uhc"><span>✅</span> UnitedHealthcare</div>
+          </div>
+
+          <div id="insurance-search-msg" class="search-msg hidden"></div>
+
+          <div class="membership-box">
+            <div class="membership-info">
+              <h3>No Dental Insurance? No Problem.</h3>
+              <p>Our <strong>Bright Smile Membership Plan</strong> gives you comprehensive preventive care without deductibles or waiting periods.</p>
+            </div>
+            <div class="membership-price">
+              <span class="price">$30</span>
+              <span class="period">/ month</span>
+              <button class="btn btn-outline trigger-chat" data-prompt="Tell me more about the $30/month membership plan">
+                View Plan Details
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+    </section>
+
+    <!-- Interactive Services Section -->
+    <section class="services-section" id="services">
+      <div class="wrap">
+        <div class="section-header">
+          <h2>Comprehensive Dental Care</h2>
+          <p>Gentle, modern treatments tailored to your smile.</p>
+        </div>
+
+        <div class="service-tabs" id="service-tabs">
+          <button class="tab-btn active" data-category="all">All Treatments</button>
+          <button class="tab-btn" data-category="preventive">Preventive</button>
+          <button class="tab-btn" data-category="cosmetic">Cosmetic</button>
+          <button class="tab-btn" data-category="restorative">Restorative</button>
+          <button class="tab-btn" data-category="emergency">Emergency</button>
+        </div>
+
+        <div class="service-grid" id="service-grid">
+          <!-- Preventive -->
+          <div class="service-card" data-category="preventive">
+            <div class="service-icon">🪥</div>
+            <div class="service-meta">
+              <span class="service-time">⏱️ 45–60 mins</span>
+              <span class="service-cost">$120 (New) / $90</span>
+            </div>
+            <h3>Cleanings & Checkups</h3>
+            <p>Thorough, gentle exams and cleanings to prevent decay, protect gums, and keep your smile vibrant.</p>
+            <button class="btn-text trigger-chat" data-prompt="I want to book a cleaning and exam">Book Cleaning →</button>
+          </div>
+
+          <!-- Cosmetic -->
+          <div class="service-card" data-category="cosmetic">
+            <div class="service-icon">✨</div>
+            <div class="service-meta">
+              <span class="service-time">⏱️ 60 mins</span>
+              <span class="service-cost">$250</span>
+            </div>
+            <h3>In-Office Teeth Whitening</h3>
+            <p>Professional whitening that lifts stubborn stains safely, giving you a noticeably brighter smile in under an hour.</p>
+            <button class="btn-text trigger-chat" data-prompt="Tell me about teeth whitening options">Inquire Whitening →</button>
+          </div>
+
+          <!-- Restorative -->
+          <div class="service-card" data-category="restorative">
+            <div class="service-icon">🦷</div>
+            <div class="service-meta">
+              <span class="service-time">⏱️ 45 mins</span>
+              <span class="service-cost">From $150</span>
+            </div>
+            <h3>Tooth-Colored Fillings</h3>
+            <p>Durable, natural-looking composite fillings that restore decayed teeth seamlessly without silver or mercury.</p>
+            <button class="btn-text trigger-chat" data-prompt="I need to get a cavity filled">Schedule Filling →</button>
+          </div>
+
+          <!-- Restorative -->
+          <div class="service-card" data-category="restorative">
+            <div class="service-icon">👑</div>
+            <div class="service-meta">
+              <span class="service-time">⏱️ Single/2 Visits</span>
+              <span class="service-cost">Varies</span>
+            </div>
+            <h3>Crowns & Bridges</h3>
+            <p>Custom ceramic crowns built to restore weak, broken, or missing teeth with maximum comfort and natural appearance.</p>
+            <button class="btn-text trigger-chat" data-prompt="I need info on dental crowns and bridges">Learn More →</button>
+          </div>
+
+          <!-- Preventive -->
+          <div class="service-card" data-category="preventive">
+            <div class="service-icon">🧸</div>
+            <div class="service-meta">
+              <span class="service-time">⏱️ 30–45 mins</span>
+              <span class="service-cost">$85</span>
+            </div>
+            <h3>Pediatric Dentistry</h3>
+            <p>Friendly, patient dental care designed specifically to make kids feel safe, relaxed, and excited about oral health.</p>
+            <button class="btn-text trigger-chat" data-prompt="I want to book a pediatric visit for my child">Book for Kids →</button>
+          </div>
+
+          <!-- Emergency -->
+          <div class="service-card highlight" data-category="emergency">
+            <div class="service-icon">🚨</div>
+            <div class="service-meta">
+              <span class="service-time">⏱️ Same-Day</span>
+              <span class="service-cost">Priority Slot</span>
+            </div>
+            <h3>Emergency Dental Care</h3>
+            <p>Toothaches, chipped teeth, or swelling? We reserve daily slots to get you out of pain immediately.</p>
+            <button class="btn-text trigger-chat" data-prompt="I have an emergency dental issue right now">Get Same-Day Care →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Doctor Profile Section -->
+    <section class="about-section" id="about">
+      <div class="wrap about-grid">
+        <div class="about-image-card">
+          <div class="doctor-badge">
+            <span class="dr-name">Dr. Elena Ruiz, DDS</span>
+            <span class="dr-title">Lead Dentist & Practice Founder</span>
+          </div>
+        </div>
+
+        <div class="about-copy">
+          <span class="kicker">Meet Your Dentist</span>
+          <h2>Gentle dentistry rooted in warmth & precision.</h2>
+          <p>
+            "I built Bright Smile Dental because I believed going to the dentist shouldn't feel like a chore or an uncomfortable ordeal. We focus on active listening, pain-free techniques, and honest guidance."
+          </p>
+          
+          <ul class="doctor-promises">
+            <li>
+              <span class="check-icon">✓</span>
+              <div>
+                <strong>Anxiety-Free Environment</strong>
+                <p>Gentle technique with optional calming options for nervous patients.</p>
+              </div>
+            </li>
+            <li>
+              <span class="check-icon">✓</span>
+              <div>
+                <strong>No Surprise Billing</strong>
+                <p>We explain every cost upfront before treatment begins.</p>
+              </div>
+            </li>
+            <li>
+              <span class="check-icon">✓</span>
+              <div>
+                <strong>On-Time Guarantee</strong>
+                <p>We respect your busy schedule — minimal waiting room delays.</p>
+              </div>
+            </li>
+          </ul>
+
+          <button class="btn btn-primary trigger-chat" data-prompt="I'd like to book a consultation with Dr. Ruiz">
+            Meet Dr. Ruiz in Person
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials / Reviews Section -->
+    <section class="reviews-section" id="reviews">
+      <div class="wrap">
+        <div class="section-header center">
+          <h2>Loved by Springfield Families</h2>
+          <p>Read real experiences from long-time patients.</p>
+        </div>
+
+        <div class="reviews-grid">
+          <div class="review-card">
+            <div class="stars">★★★★★</div>
+            <p class="review-text">"I used to dread going to the dentist due to severe anxiety. Dr. Ruiz and her team are incredible — so patient, gentle, and transparent."</p>
+            <div class="reviewer">
+              <strong>Sarah M.</strong>
+              <span>Patient for 4 years • Cleanings</span>
+            </div>
+          </div>
+
+          <div class="review-card">
+            <div class="stars">★★★★★</div>
+            <p class="review-text">"The AI chatbot on their site made booking an urgent evening slot effortless! Showed up, was seen in 5 minutes, and left painless."</p>
+            <div class="reviewer">
+              <strong>David K.</strong>
+              <span>Patient for 1 year • Emergency Care</span>
+            </div>
+          </div>
+
+          <div class="review-card">
+            <div class="stars">★★★★★</div>
+            <p class="review-text">"Got my teeth whitened before my wedding here. The results were astounding and didn't trigger any sensitivity. Highly recommend!"</p>
+            <div class="reviewer">
+              <strong>Jessica T.</strong>
+              <span>Patient for 2 years • Whitening</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Accordion Section -->
+    <section class="faq-section" id="faq">
+      <div class="wrap">
+        <div class="section-header center">
+          <h2>Frequently Asked Questions</h2>
+          <p>Got questions? We've got clear answers.</p>
+        </div>
+
+        <div class="faq-container">
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What should I expect on my first visit?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Your first visit includes a comprehensive oral exam, low-radiation digital X-rays, a gentle cleaning, and a one-on-one discussion with Dr. Ruiz regarding your oral health goals.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What if I don't have dental insurance?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>We offer our in-house <strong>Bright Smile Membership Plan</strong> for $30/month. It covers 2 annual cleanings, all routine exams, X-rays, and gives you 15% off all other services without waiting periods.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How do you handle patients with dental anxiety?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>We specialize in nervous patients! We offer quiet treatment rooms, soothing music, warm blankets, gentle numbing gels, and step-by-step explanations so you feel completely in control.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What is your cancellation or rescheduling policy?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>We ask for at least 24 hours notice to reschedule or cancel an appointment. You can easily modify or cancel your booking through our virtual chatbot or by calling our office.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Location & Hours Section -->
+    <section class="location-section" id="location">
+      <div class="wrap location-grid">
+        <div class="location-info">
+          <h2>Visit Our Practice</h2>
+          <p>Conveniently located in central Springfield with ample free parking.</p>
+
+          <div class="info-list">
+            <div class="info-item">
+              <span class="info-icon">📍</span>
+              <div>
+                <strong>Address</strong>
+                <p>142 Maple Ave, Springfield, OR 97477</p>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <span class="info-icon">⏰</span>
+              <div>
+                <strong>Office Hours</strong>
+                <p>Monday – Friday: 8:00 AM – 6:00 PM</p>
+                <p>Saturday: 9:00 AM – 2:00 PM</p>
+                <p>Sunday: Closed</p>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <span class="info-icon">📞</span>
+              <div>
+                <strong>Contact</strong>
+                <p>Phone: (555) 123-4567</p>
+                <p>Email: hello@brightsmiledental.demo</p>
+              </div>
+            </div>
+          </div>
+
+          <a href="https://maps.google.com" target="_blank" rel="noopener" class="btn btn-secondary">
+            🗺️ Get Directions
+          </a>
+        </div>
+
+        <div class="map-card">
+          <div class="map-placeholder">
+            <span class="map-icon">📍</span>
+            <p><strong>142 Maple Ave, Springfield</strong></p>
+            <p class="dim">Convenient free parking behind the building</p>
+            <button class="btn btn-primary btn-sm trigger-chat" data-prompt="How do I get to your office?">
+              Ask Chat for Directions
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Booking Modal Popup -->
+    <div id="bookingModal" class="modal-overlay" style="display: none;">
+      <div class="modal-content">
+        <button type="button" class="modal-close" id="closeModalBtn">&times;</button>
+        <h2>Schedule Your Visit</h2>
+        <p>Select your preferred date and time, and our team will confirm your spot.</p>
+
+        <form id="manualBookingForm">
+          <div class="form-group">
+            <label for="mbName">Full Name *</label>
+            <input type="text" id="mbName" name="name" required placeholder="e.g. Patricia Balana" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="mbPhone">Phone Number *</label>
+              <input type="tel" id="mbPhone" name="phone" required placeholder="(555) 000-0000" />
+            </div>
+            <div class="form-group">
+              <label for="mbEmail">Email Address *</label>
+              <input type="email" id="mbEmail" name="email" required placeholder="name@example.com" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="mbDate">Preferred Date *</label>
+              <input type="date" id="mbDate" name="date" required />
+            </div>
+            <div class="form-group">
+              <label for="mbTime">Preferred Time *</label>
+              <select id="mbTime" name="time" required>
+                <option value="">Select Time Slot</option>
+                <option value="09:00 AM">09:00 AM</option>
+                <option value="10:00 AM">10:00 AM</option>
+                <option value="11:00 AM">11:00 AM</option>
+                <option value="01:00 PM">01:00 PM</option>
+                <option value="02:00 PM">02:00 PM</option>
+                <option value="03:00 PM">03:00 PM</option>
+                <option value="04:00 PM">04:00 PM</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="mbService">Service Needed</label>
+            <select id="mbService" name="service">
+              <option value="General Cleaning">General Cleaning & Checkup</option>
+              <option value="Teeth Whitening">Teeth Whitening</option>
+              <option value="Emergency Care">Emergency Care</option>
+              <option value="Consultation">General Consultation</option>
+            </select>
+          </div>
+
+          <button type="submit" class="modal-submit-btn" id="mbSubmitBtn">Confirm Booking</button>
+          <div id="bookingStatus" class="booking-status"></div>
+        </form>
+      </div>
+    </div>
     </section>
   </main>
 
+  <!-- Site Footer -->
   <footer class="site-footer">
-    <div class="wrap">Bright Smile Dental · 142 Maple Ave, Springfield · (demo site for a chatbot prototype)</div>
+    <div class="wrap footer-content">
+      <div class="footer-brand">
+        <span class="brand-name">Bright Smile Dental</span>
+        <p>142 Maple Ave, Springfield • (555) 123-4567</p>
+      </div>
+      <div class="footer-links">
+        <a href="#services">Services</a>
+        <a href="#insurance">Insurance</a>
+        <a href="#about">Dr. Ruiz</a>
+        <a href="/admin.html" target="_blank">Admin Portal</a>
+      </div>
+      <div class="footer-copy">
+        © <span id="year"></span> Bright Smile Dental. All rights reserved. Demo practice site.
+      </div>
+    </div>
   </footer>
 
-  <!-- Chat widget -->
-  <!-- This is the entire integration: one script tag. Same one your
-       dentist contact would paste into her real site. -->
+  <!-- Landing page interactivity JS script -->
+  <script src="landing.js"></script>
+
+  <!-- Embed Chatbot Widget -->
   <script src="/embed.js" async></script>
+
+  <script>document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("bookingModal");
+  const closeModalBtn = document.getElementById("closeModalBtn");
+  const form = document.getElementById("manualBookingForm");
+  const statusDiv = document.getElementById("bookingStatus");
+
+  // Open Modal function
+  window.openBookingModal = function () {
+    modal.style.display = "flex";
+  };
+
+  // Close Modal function
+  window.closeBookingModal = function () {
+    modal.style.display = "none";
+    statusDiv.textContent = "";
+    form.reset();
+  };
+
+  closeModalBtn.addEventListener("click", closeBookingModal);
+
+  // Close modal when clicking dark overlay outside the box
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeBookingModal();
+  });
+
+  // Attach click events to "Book Appointment" and "Schedule Your Visit" buttons
+  // Attach click events to "Book Appointment" and "Schedule Your Visit" buttons
+  const triggerBtns = document.querySelectorAll("button, a");
+  triggerBtns.forEach((btn) => {
+    const text = btn.textContent.trim().toLowerCase();
+    if (text.includes("book appointment") || text.includes("schedule your visit")) {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();            // Stop event from reaching the chatbot listener
+        e.stopImmediatePropagation();   // Stop any other listeners attached to this button
+        openBookingModal();
+      });
+    }
+  });
+
+  // Submit manual booking directly to POST /api/bookings
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const submitBtn = document.getElementById("mbSubmitBtn");
+
+    const formData = {
+      name: document.getElementById("mbName").value,
+      phone: document.getElementById("mbPhone").value,
+      email: document.getElementById("mbEmail").value,
+      date: document.getElementById("mbDate").value,
+      time: document.getElementById("mbTime").value,
+      notes: document.getElementById("mbService").value,
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+    statusDiv.style.color = "#1b3b36";
+    statusDiv.textContent = "Saving your appointment...";
+
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        statusDiv.style.color = "#2e7d32";
+        statusDiv.textContent = "🎉 Booking submitted successfully!";
+        setTimeout(() => closeBookingModal(), 2000);
+      } else {
+        throw new Error("Failed to submit");
+      }
+    } catch (err) {
+      statusDiv.style.color = "#d32f2f";
+      statusDiv.textContent = "Error submitting booking. Please try again.";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Confirm Booking";
+    }
+  });
+});</script>
 </body>
 </html>

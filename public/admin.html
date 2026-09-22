@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Bright Smile Dental — Admin</title>
+<title>Bright Smile Dental — Practice Management Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
@@ -11,11 +11,11 @@
 </head>
 <body class="admin-body">
 
-  <!-- Key gate: shown until a working admin key is entered -->
+  <!-- Gate: shown until authenticated -->
   <div id="gate" class="gate">
     <div class="gate-card">
       <h1>Bright Smile Dental</h1>
-      <p class="gate-sub">Admin dashboard</p>
+      <p class="gate-sub">Admin Dashboard</p>
       <input id="key-input" type="password" placeholder="Admin key" autocomplete="off" />
       <button id="unlock-btn">Unlock</button>
       <p id="gate-error" class="gate-error"></p>
@@ -23,11 +23,12 @@
     </div>
   </div>
 
-  <!-- Dashboard: shown once a valid key is confirmed -->
+  <!-- Dashboard: shown once authenticated -->
   <div id="dashboard" class="dashboard hidden">
     <header class="admin-header">
-      <div class="admin-brand">Bright Smile Dental <span class="admin-brand-sub">Admin</span></div>
+      <div class="admin-brand">Bright Smile Dental <span class="admin-brand-sub">Practice Portal</span></div>
       <div class="admin-actions">
+        <button id="export-btn" class="btn-secondary">📥 Export CSV</button>
         <button id="refresh-btn" class="btn-secondary">Refresh</button>
         <button id="logout-btn" class="btn-secondary">Log out</button>
       </div>
@@ -37,28 +38,56 @@
 
     <div class="tabs">
       <button class="tab-btn active" data-tab="bookings">Bookings</button>
-      <button class="tab-btn" data-tab="leads">Leads</button>
+      <button class="tab-btn" data-tab="leads">Leads &amp; Inquiries</button>
     </div>
 
+    <!-- Bookings Panel -->
     <section id="bookings-panel" class="panel">
       <table>
         <thead>
-          <tr><th>Date</th><th>Time</th><th>Patient</th><th>Service</th><th>Booked at</th></tr>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Patient</th>
+            <th>Service</th>
+            <th>Status</th>
+            <th>Booked At</th>
+            <th>Action</th>
+          </tr>
         </thead>
         <tbody id="bookings-body"></tbody>
       </table>
       <p id="bookings-empty" class="empty-note hidden">No bookings yet.</p>
     </section>
 
+    <!-- Leads Panel -->
     <section id="leads-panel" class="panel hidden">
       <table>
         <thead>
-          <tr><th>Name</th><th>Phone</th><th>Reason</th><th>Captured at</th></tr>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Captured At</th>
+            <th>Context</th>
+          </tr>
         </thead>
         <tbody id="leads-body"></tbody>
       </table>
       <p id="leads-empty" class="empty-note hidden">No leads yet.</p>
     </section>
+  </div>
+
+  <!-- Transcript / Context Modal -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title">Chat Transcript Context</h3>
+        <button id="modal-close" class="modal-close">&times;</button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
+    </div>
   </div>
 
   <script src="admin.js"></script>
